@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from django.views.generic import TemplateView
 
 from api.views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
 
@@ -15,5 +16,4 @@ urlpatterns = [
     path('', include('djoser.urls')),
     path('', include(router.urls)),
     path('auth/', include('djoser.urls.authtoken'), name='auth_logout'),
-    path('users/me/avatar/', UserViewSet.as_view({'put': 'avatar', 'delete': 'avatar'}), name='user-avatar'),
 ]

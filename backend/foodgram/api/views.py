@@ -23,16 +23,8 @@ User = get_user_model()
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-    # @action(['get'], detail=False)
-    # def me(self, request):
-    #     if not request.user.is_authenticated:
-    #         return Response(
-    #             {'detail': 'Учетные данные не были предоставлены.'},
-    #             status=status.HTTP_401_UNAUTHORIZED
-    #         )
-    #     serializer = self.get_serializer(request.user)
-    #     return Response(serializer.data)
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = LimitOffsetPagination
 
     @action(
         detail=True,
@@ -53,7 +45,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     {'errors': 'Вы уже подписаны на данного пользователя'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            
+
             if request.user == subscribed:
                 return Response(
                     {'errors': 'Вы не можете подписаться на себя'},
@@ -76,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 {'errors': 'Вы не подписаны на этого пользователя'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -84,32 +76,42 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         methods=['get'],
         permission_classes=[permissions.IsAuthenticated],
-        pagination_class=LimitOffsetPagination
+        pagination_class=LimitOffsetPagination,
+        url_path='subscriptions',
     )
     def subscriptions(self, request):
-        queryset = Subscription.objects.filter(subscriber=request.user
-                                               ).select_related('subscribed'
-                                                                ).prefetch_related('subscribed__recipes')
-        
-        page = self.paginate_queryset(queryset)
-        
-        recipes_limit = request.query_params.get('recipes_limit')
-        serializer = SubscriptionSerializer(
-            page,
-            many=True,
-            context={
-                'request': request,
-                'recipes_limit': recipes_limit
-            }
+        queryset = Subscription.objects.filter(
+            subscriber=request.user
+        ).select_related(
+            'subscribed'
+        ).prefetch_related(
+            'subscribed__recipes'
         )
-        
-        return self.get_paginated_response(serializer.data)
+        serializer = SubscriptionSerializer(
+            queryset,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # page = self.paginate_queryset(queryset)
+
+        # recipes_limit = request.query_params.get('recipes_limit')
+        # serializer = SubscriptionSerializer(
+        #     page,
+        #     many=True,
+        #     context={
+        #         'request': request,
+        #         'recipes_limit': recipes_limit
+        #     }
+        # )
+
+        # return self.get_paginated_response(serializer.data)
 
     @action(
         detail=False,
         methods=['put', 'delete'],
         permission_classes=[permissions.IsAuthenticated],
-        serializer_class=UserAvatarSerializer,
+        url_path='me/avatar'
     )
     def avatar(self, request):
         user = request.user
@@ -119,10 +121,11 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        serializer = self.get_serializer(user, data=request.data)
+        serializer = UserAvatarSerializer(user, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -131,7 +134,8 @@ class TagViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated()]  # Доступ для всех аутентифицированных
+            # Доступ для всех аутентифицированных
+            return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]  # GET доступен всем
 
     def _check_admin_or_405(self):
@@ -173,7 +177,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated()]  # Доступ для всех аутентифицированных
+            # Доступ для всех аутентифицированных
+            return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]  # GET доступен всем
 
     def _check_admin_or_405(self):
@@ -217,7 +222,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'get_link']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
@@ -260,12 +265,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {'favorite': 'Рецепт уже в избранном'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            favorite = Favorite.objects.create(
+                user=request.user, recipe=recipe)
             serializer = FavoriteSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id},
-                context={'request': request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+                favorite, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if not favorite.exists():
@@ -273,6 +276,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {'favorite': 'Рецепт не находится в избранном.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        favorite = Favorite.objects.get(user=request.user, recipe=recipe)
         favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -293,12 +297,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {'shopping_cart': 'Рецепт уже в корзине'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            cart_item = ShoppingCart.objects.create(
+                user=request.user, recipe=recipe)
             serializer = ShoppingCartSerializer(
-                data={'user': request.user.id, 'recipe': recipe.id},
-                context={'request': request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+                cart_item, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if not cart_item.exists():
@@ -306,6 +308,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {'shopping_cart': 'Рецепт не находится в корзине.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        cart_item = ShoppingCart.objects.get(user=request.user, recipe=recipe)
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -328,18 +331,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
             for ing in ingredients
         ]
 
-        response = HttpResponse('\n'.join(shopping_list), content_type='text/plain')
+        response = HttpResponse('\n'.join(shopping_list),
+                                content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
         return response
 
     @action(
         detail=True,
         methods=('get',),
-        permission_classes=(permissions.IsAuthenticated,),
+        permission_classes=(permissions.AllowAny,),
         url_path='get-link',
     )
     def get_link(self, request, pk=None):
         """Получение короткой ссылки на рецепт"""
         recipe = get_object_or_404(Recipe, pk=pk)
         short_link = f'https://foodgram.example.org/s/{pk}'
-        return Response({'short-link': short_link})
+        return Response({'short-link': short_link}, status=status.HTTP_200_OK)
