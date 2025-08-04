@@ -7,7 +7,7 @@ from users.models import User
 
 @admin.register(User)
 class ExtendedUserAdmin(UserAdmin):
-    """Интерфейс админ-зоны для кастомной модели пользователя."""
+    """Административная панель для кастомной модели пользователя."""
 
     list_display = (
         'username',
@@ -46,7 +46,7 @@ class ExtendedUserAdmin(UserAdmin):
         (_('Extra'), {
             'fields': (
                 'avatar',
-                'is_subscribed'
+                'is_subscribed',
             )
         }),
     )

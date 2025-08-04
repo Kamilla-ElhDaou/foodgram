@@ -7,7 +7,17 @@ from constants import (
 
 
 class User(AbstractUser):
-    """Модель для пользователя."""
+    """
+    Модель для пользователя с расширенными полями профиля.
+
+    Атрибуты:
+        username (CharField): Уникальное имя пользователя.
+        email (EmailField): Уникальный email пользователя.
+        first_name (CharField): Имя пользователя.
+        last_name (CharField): Фамилия пользователя.
+        avatar (ImageField): Аватар пользователя (опционально).
+        is_subscribed (BooleanField): Флаг подписки на других пользователей.
+    """
     username = models.CharField(
         max_length=MAX_USERNAME_LENGTH,
         unique=True,
