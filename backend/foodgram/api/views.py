@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import FoodgramPageNumberPagination
 from api.serializers import (FavoriteSerializer, IngredientSerializer,
                              RecipeCreateSerializer, RecipeSerializer,
                              ShoppingCartSerializer, SubscribeSerializer,
@@ -17,6 +17,7 @@ from api.serializers import (FavoriteSerializer, IngredientSerializer,
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Subscription, Tag)
 
+
 User = get_user_model()
 
 
@@ -24,7 +25,29 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = LimitOffsetPagination
+    pagination_class = FoodgramPageNumberPagination
+
+    @action(
+        detail=False,
+        methods=('get',),
+        permission_classes=(permissions.IsAuthenticated, ),
+        url_path='subscriptions',
+        url_name='subscriptions',
+    )
+    def subscriptions(self, request):
+        """Метод для создания страницы подписок"""
+
+        queryset = User.objects.filter(subscriptions__user=self.request.user)
+        if queryset:
+            page = self.paginate_queryset(queryset)
+            serializer = SubscriptionSerializer(
+                page,
+                many=True,
+                context={'request': request}
+            )
+            return self.get_paginated_response(serializer.data)
+        return Response({'subscriptions': 'Вы ни на кого не подписаны.'},
+                        status=status.HTTP_200_OK)
 
     @action(
         detail=True,
@@ -57,12 +80,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 subscribed=subscribed
             )
             serializer = self.get_serializer(
-                subscribed,  # Сериализуем пользователя, а не подписку
+                subscribed,
                 context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        # DELETE метод
         if not subscription.exists():
             return Response(
                 {'errors': 'Вы не подписаны на этого пользователя'},
@@ -71,41 +93,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(
-        detail=False,
-        methods=['get'],
-        permission_classes=[permissions.IsAuthenticated],
-        pagination_class=LimitOffsetPagination,
-        url_path='subscriptions',
-    )
-    def subscriptions(self, request):
-        queryset = Subscription.objects.filter(
-            subscriber=request.user
-        ).select_related(
-            'subscribed'
-        ).prefetch_related(
-            'subscribed__recipes'
-        )
-        serializer = SubscriptionSerializer(
-            queryset,
-            many=True,
-            context={'request': request}
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        # page = self.paginate_queryset(queryset)
-
-        # recipes_limit = request.query_params.get('recipes_limit')
-        # serializer = SubscriptionSerializer(
-        #     page,
-        #     many=True,
-        #     context={
-        #         'request': request,
-        #         'recipes_limit': recipes_limit
-        #     }
-        # )
-
-        # return self.get_paginated_response(serializer.data)
 
     @action(
         detail=False,
@@ -134,9 +121,8 @@ class TagViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            # Доступ для всех аутентифицированных
             return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]  # GET доступен всем
+        return [permissions.AllowAny()]
 
     def _check_admin_or_405(self):
         """Проверяет, что пользователь — админ, иначе возвращает 405"""
@@ -177,9 +163,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            # Доступ для всех аутентифицированных
             return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]  # GET доступен всем
+        return [permissions.AllowAny()]
 
     def _check_admin_or_405(self):
         """Проверяет, что пользователь — админ, иначе возвращает 405"""
@@ -218,7 +203,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = RecipeFilter
     search_fields = ('author__username', 'tags__slug')
-    pagination_class = LimitOffsetPagination
+    pagination_class = FoodgramPageNumberPagination
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_permissions(self):

@@ -66,7 +66,7 @@ class UserAvatarSerializer(serializers.Serializer):
     avatar = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = User  # или ваша кастомная модель пользователя
+        model = User
         fields = ['avatar']
     
     def update(self, instance, validated_data):
@@ -162,28 +162,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'ingredients': 'Нужно добавить хотя бы один ингредиент'}
             )
-
-        # ingredient_ids = [ingredient['id'] for ingredient in ingredients]
-        # existing_ingredients = Ingredient.objects.filter(id__in=ingredient_ids)
-        # if len(existing_ingredients) != len(ingredient_ids):
-        #     # Если количество найденных ингредиентов не совпадает с запрошенными
-        #     missing_ids = set(ingredient_ids) - {ing.id for ing in existing_ingredients}
-        #     raise serializers.ValidationError(
-        #         {'ingredients': f'Некоторые ингредиенты не найдены: {missing_ids}'}
-        #     )
-        # if len(ingredient_ids) != len(set(ingredient_ids)):
-        #     raise serializers.ValidationError(
-        #         {'ingredients': 'Ингредиенты не должны повторяться'}
-        #     )
         ingredient_ids = [ingredient['id'] for ingredient in ingredients]
-    
-        # Проверка на дубликаты ингредиентов
+
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
                 {'ingredients': 'Ингредиенты не должны повторяться'}
             )
-        
-        # Проверка существования ингредиентов
+
         existing_ids = set(Ingredient.objects.filter(
             id__in=ingredient_ids
         ).values_list('id', flat=True))
@@ -240,12 +225,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             instance.tags.set(tags)
         
         if ingredients is not None:
-            # Проверяем, существуют ли все ингредиенты
             ingredient_ids = [ingredient['id'] for ingredient in ingredients]
             existing_ingredients = Ingredient.objects.filter(id__in=ingredient_ids)
             
             if len(existing_ingredients) != len(ingredient_ids):
-                # Если количество найденных ингредиентов не совпадает с запрошенными
                 missing_ids = set(ingredient_ids) - {ing.id for ing in existing_ingredients}
                 raise serializers.ValidationError(
                     {'ingredients': f'Некоторые ингредиенты не найдены: {missing_ids}'}
@@ -303,7 +286,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        recipes = obj.recipes.all()
+        recipes = obj.subscribed.recipes.all()
         limit = request.query_params.get('recipes_limit')
         if limit:
             recipes = recipes[:int(limit)]
@@ -315,7 +298,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_recipes_count(self, obj):
-        return obj.recipes.count()
+        return obj.subscribed.recipes.count()
 
 class SubscribeSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField()
@@ -326,7 +309,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
-    avatar = serializers.SerializerMethodField()
+    avatar = Base64ImageField(read_only=True)
 
     class Meta:
         model = User
@@ -354,9 +337,3 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-
-    def get_avatar(self, obj):
-        request = self.context.get('request')
-        if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.url)
-        return None
