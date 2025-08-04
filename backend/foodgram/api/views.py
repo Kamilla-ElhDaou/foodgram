@@ -31,17 +31,20 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     pagination_class = FoodgramPageNumberPagination
 
+    @action(detail=False, methods=['get'])
+    def test(self, request):
+        return Response(status=HTTP_OK)
+
     @action(
         detail=False,
         methods=('get',),
         permission_classes=(permissions.IsAuthenticated,),
-        url_path='subscriptions',
-        url_name='subscriptions',
     )
     def subscriptions(self, request):
         """Метод для создания страницы подписок."""
-
-        queryset = User.objects.filter(subscriptions__user=self.request.user)
+        queryset = User.objects.filter(
+            subscribers__subscriber=self.request.user
+        )
         if queryset:
             page = self.paginate_queryset(queryset)
             serializer = SubscriptionSerializer(
