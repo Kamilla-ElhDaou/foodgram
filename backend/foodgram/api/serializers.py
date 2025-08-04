@@ -334,12 +334,16 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'recipes', 'recipes_count')
+        fields = (
+            'email', 'id', 'username', 'first_name',
+            'last_name', 'is_subscribed', 'recipes',
+            'recipes_count', 'avatar',
+        )
 
     def get_recipes(self, obj):
         """Получение рецептов пользователей."""
         request = self.context.get('request')
-        recipes = obj.subscribed.recipes.all()
+        recipes = obj.recipes.all()
         limit = request.query_params.get('recipes_limit')
         if limit:
             recipes = recipes[:int(limit)]
@@ -352,7 +356,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         """Подсчет количества рецептов"""
-        return obj.subscribed.recipes.count()
+        return obj.recipes.count()
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -373,7 +377,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'id', 'username', 'first_name',
             'last_name', 'is_subscribed', 'recipes',
-            'recipes_count', 'avatar'
+            'recipes_count', 'avatar',
         )
 
     def get_is_subscribed(self, obj):
