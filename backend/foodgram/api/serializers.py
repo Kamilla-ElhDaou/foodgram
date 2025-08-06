@@ -59,7 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
         if not isinstance(instance, User):
             raise NotAuthenticated('Необходимо авторизоваться.')
         return super().to_representation(instance)
-    
+
     def get_is_subscribed(self, obj):
         """Подписан ли текущий пользователь на данного пользователя."""
         request = self.context.get('request')
@@ -359,45 +359,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return obj.recipes.count()
 
 
-class SubscribeSerializer(serializers.ModelSerializer):
+class SubscribeSerializer(SubscriptionSerializer):
     """Сериализатор подписания на пользователя."""
 
-    email = serializers.ReadOnlyField()
-    id = serializers.ReadOnlyField()
-    username = serializers.ReadOnlyField()
-    first_name = serializers.ReadOnlyField()
-    last_name = serializers.ReadOnlyField()
     is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-    avatar = Base64ImageField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'email', 'id', 'username', 'first_name',
-            'last_name', 'is_subscribed', 'recipes',
-            'recipes_count', 'avatar',
-        )
 
     def get_is_subscribed(self, obj):
         """Отображение статуса подписки."""
         return True
-
-    def get_recipes(self, obj):
-        """Получение рецептов подписки."""
-        request = self.context.get('request')
-        recipes = obj.recipes.all()
-        limit = request.query_params.get('recipes_limit')
-        if limit:
-            recipes = recipes[:int(limit)]
-        serializer = ShortRecipeSerializer(
-            recipes,
-            many=True,
-            context={'request': request}
-        )
-        return serializer.data
-
-    def get_recipes_count(self, obj):
-        """Подсчет рецептов подписки."""
-        return obj.recipes.count()
