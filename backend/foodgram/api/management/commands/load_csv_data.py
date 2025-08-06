@@ -13,7 +13,7 @@ User = get_user_model()
 class Command(BaseCommand):
     """Загрузка файлов из CSV файлов."""
 
-    DATA_PATH = 'static/data/'
+    DATA_PATH = 'api/data/'
     CSV_ENCODING = 'utf-8'
 
     help = 'Load data from CSV files into database'
@@ -43,11 +43,9 @@ class Command(BaseCommand):
             if 'name' in first_line and 'measurement_unit' in first_line:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
+                    data = {**row}
                     try:
-                        model.objects.get_or_create(
-                            name=row['name'],
-                            measurement_unit=row['measurement_unit']
-                        )
+                        model.objects.get_or_create(**data)
                     except IntegrityError:
                         self.stdout.write(self.style.WARNING(
                             f'Объект уже существует: {model.__name__} {data}'
@@ -64,5 +62,6 @@ class Command(BaseCommand):
                         )
                     except IntegrityError:
                         self.stdout.write(self.style.WARNING(
-                            f'Объект уже существует: {model.__name__} {data}'
+                            f'Объект уже существует: {model.__name__} '
+                            f'{row[0]} {row[1]}'
                         ))
