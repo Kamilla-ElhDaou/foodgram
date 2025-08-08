@@ -26,11 +26,11 @@ class RecipeFilter(filters.FilterSet):
         """Фильтрация по ИЛИ (OR) - рецепт содержит хотя бы один тег."""
         if not value:
             return queryset
-            
+
         q_objects = Q()
         for tag in value:
             q_objects |= Q(tags__slug=tag.slug)
-            
+
         return queryset.filter(q_objects).distinct()
 
     def filter_is_favorited(self, queryset, name, value):
