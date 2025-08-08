@@ -223,7 +223,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         cooking_time = data.get('cooking_time')
         if cooking_time < 1:
             raise serializers.ValidationError(
-                {'cooking_time': 'Время приготовления должно быть не менее 1 минуты'}
+                {'cooking_time': 'Время приготовления должно быть более 1 мин'}
             )
 
         return data
@@ -260,12 +260,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         if ingredients is not None:
             ingredient_ids = [ingredient['id'] for ingredient in ingredients]
-            existing_ingredients = Ingredient.objects.filter(id__in=ingredient_ids)
+            existing_ingredients = Ingredient.objects.filter(
+                id__in=ingredient_ids
+            )
 
             if len(existing_ingredients) != len(ingredient_ids):
-                missing_ids = set(ingredient_ids) - {ing.id for ing in existing_ingredients}
+                missing_ids = (set(ingredient_ids)
+                               - {ing.id for ing in existing_ingredients})
                 raise serializers.ValidationError(
-                    {'ingredients': f'Некоторые ингредиенты не найдены: {missing_ids}'}
+                    {'ingredients': ('Некоторые ингредиенты не найдены:'
+                                     f' {missing_ids}')}
                 )
 
             instance.ingredients.clear()

@@ -324,7 +324,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         response = HttpResponse('\n'.join(shopping_list),
                                 content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        response['Content-Disposition'] = ('attachment;'
+                                           'filename="shopping_list.txt"')
         return response
 
     @action(
@@ -335,6 +336,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def get_link(self, request, pk=None):
         """Получение короткой ссылки на рецепт."""
-        recipe = get_object_or_404(Recipe, pk=pk)
+        get_object_or_404(Recipe, pk=pk)
         short_link = f'https://foodgram.ddnsking.com/s/{pk}'
         return Response({'short-link': short_link}, status=HTTP_OK)
