@@ -22,6 +22,7 @@ class Command(BaseCommand):
         """Основной метод обработки команды."""
         loaders = {
             'ingredients.csv': (Ingredient, self.load_data),
+            'tags.csv': (Ingredient, self.load_data),
         }
 
         for filename, (model, func) in loaders.items():

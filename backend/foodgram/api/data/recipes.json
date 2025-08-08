@@ -1,0 +1,243 @@
+[
+  {
+    "name": "Салат Греческий",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Нарезать овощи кубиками, добавить сыр фета и оливки, заправить оливковым маслом.",
+    "cooking_time": 15,
+    "tags": [2, 5],
+    "ingredients": [
+      {"id": 10, "amount": 2},
+      {"id": 11, "amount": 2},
+      {"id": 12, "amount": 1},
+      {"id": 16, "amount": 100}
+    ],
+    "author": 17
+  },
+  {
+    "name": "Картофель по-деревенски",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Картофель нарезать дольками, посолить, поперчить, запекать 40 минут при 180°C.",
+    "cooking_time": 40,
+    "tags": [2, 3],
+    "ingredients": [
+      {"id": 18, "amount": 4},
+      {"id": 5, "amount": 5},
+      {"id": 6, "amount": 3}
+    ],
+    "author": 20
+  },
+  {
+    "name": "Яблочный пирог",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Приготовить тесто, выложить начинку из яблок, выпекать 45 минут при 180°C.",
+    "cooking_time": 60,
+    "tags": [1, 4],
+    "ingredients": [
+      {"id": 3, "amount": 200},
+      {"id": 4, "amount": 100},
+      {"id": 20, "amount": 3}
+    ],
+    "author": 18
+  },
+  {
+    "name": "Говяжий стейк",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Обжарить стейк по 3 минуты с каждой стороны, дать отдохнуть 5 минут.",
+    "cooking_time": 15,
+    "tags": [2, 3],
+    "ingredients": [
+      {"id": 17, "amount": 300},
+      {"id": 5, "amount": 3},
+      {"id": 6, "amount": 2}
+    ],
+    "author": 19
+  },
+  {
+    "name": "Суп-пюре из тыквы",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Тыкву запечь, взбить с бульоном и сливками, прогреть.",
+    "cooking_time": 35,
+    "tags": [2],
+    "ingredients": [
+      {"id": 15, "amount": 200},
+      {"id": 19, "amount": 1}
+    ],
+    "author": 17
+  },
+  {
+    "name": "Сырники",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Смешать творог с яйцом и мукой, обжарить на сковороде.",
+    "cooking_time": 25,
+    "tags": [1],
+    "ingredients": [
+      {"id": 1, "amount": 2},
+      {"id": 3, "amount": 50}
+    ],
+    "author": 20
+  },
+  {
+    "name": "Паста Карбонара",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Приготовить пасту, смешать с яично-сырной смесью и беконом.",
+    "cooking_time": 20,
+    "tags": [2, 3],
+    "ingredients": [
+      {"id": 1, "amount": 2},
+      {"id": 16, "amount": 50}
+    ],
+    "author": 19
+  },
+  {
+    "name": "Овсяная каша",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Овсяные хлопья залить молоком, варить 5 минут.",
+    "cooking_time": 10,
+    "tags": [1, 5],
+    "ingredients": [
+      {"id": 2, "amount": 200}
+    ],
+    "author": 21
+  },
+  {
+    "name": "Борщ",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Приготовить бульон, добавить овощи, варить 1 час.",
+    "cooking_time": 90,
+    "tags": [2],
+    "ingredients": [
+      {"id": 17, "amount": 300},
+      {"id": 18, "amount": 3}
+    ],
+    "author": 21
+  },
+  {
+    "name": "Шарлотка",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Взбить яйца с сахаром, добавить муку и яблоки, выпекать 30 минут.",
+    "cooking_time": 45,
+    "tags": [1, 4],
+    "ingredients": [
+      {"id": 1, "amount": 3},
+      {"id": 4, "amount": 150},
+      {"id": 20, "amount": 4}
+    ],
+    "author": 22
+  },
+  {
+    "name": "Гренки",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Хлеб обмакнуть в яйцо с молоком, обжарить на сковороде.",
+    "cooking_time": 10,
+    "tags": [1],
+    "ingredients": [
+      {"id": 1, "amount": 1},
+      {"id": 2, "amount": 50}
+    ],
+    "author": 22
+  },
+  {
+    "name": "Рататуй",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Овощи нарезать кружочками, выложить в форму, запекать 40 минут.",
+    "cooking_time": 50,
+    "tags": [2, 3, 5],
+    "ingredients": [
+      {"id": 10, "amount": 2},
+      {"id": 11, "amount": 2}
+    ],
+    "author": 21
+  },
+  {
+    "name": "Горячие бутерброды",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Хлеб с сыром запечь в духовке 10 минут.",
+    "cooking_time": 15,
+    "tags": [1, 3],
+    "ingredients": [
+      {"id": 16, "amount": 100}
+    ],
+    "author": 19
+  },
+  {
+    "name": "Гречневая каша",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Гречку залить водой 1:2, варить 20 минут.",
+    "cooking_time": 25,
+    "tags": [1, 2],
+    "ingredients": [
+      {"id": 8, "amount": 200}
+    ],
+    "author": 20
+  },
+  {
+    "name": "Овощное рагу",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Овощи потушить с маслом 30 минут.",
+    "cooking_time": 35,
+    "tags": [2, 3, 5],
+    "ingredients": [
+      {"id": 18, "amount": 3},
+      {"id": 19, "amount": 2}
+    ],
+    "author": 22
+  },
+  {
+    "name": "Блины",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Жарить на сковороде по 1 минуте с каждой стороны.",
+    "cooking_time": 30,
+    "tags": [1],
+    "ingredients": [
+      {"id": 1, "amount": 2},
+      {"id": 2, "amount": 300},
+      {"id": 3, "amount": 200}
+    ],
+    "author": 19
+  },
+  {
+    "name": "Сэндвич с курицей",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Собрать сэндвич из ингредиентов.",
+    "cooking_time": 10,
+    "tags": [1, 3],
+    "ingredients": [
+      {"id": 7, "amount": 100},
+      {"id": 16, "amount": 50}
+    ],
+    "author": 17
+  },
+  {
+    "name": "Фруктовый салат",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Нарезать фрукты, заправить йогуртом.",
+    "cooking_time": 10,
+    "tags": [1, 4],
+    "ingredients": [
+      {"id": 20, "amount": 2}
+    ],
+    "author": 20
+  },
+  {
+    "name": "Чайный гриб",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Приготовить напиток по традиционному рецепту.",
+    "cooking_time": 1440,
+    "tags": [6],
+    "ingredients": [
+      {"id": 4, "amount": 50}
+    ],
+    "author": 21
+  },
+  {
+    "name": "Яичница с беконом",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==",
+    "text": "Обжарить бекон, добавить яйца.",
+    "cooking_time": 10,
+    "tags": [1],
+    "ingredients": [
+      {"id": 1, "amount": 2}
+    ],
+    "author": 22
+  }
+]

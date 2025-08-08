@@ -1,0 +1,37 @@
+[
+  {
+    "email": "user1@example.com",
+    "username": "user1",
+    "first_name": "Иван",
+    "last_name": "Иванов",
+    "password": "password123"
+  },
+  {
+    "email": "user2@example.com",
+    "username": "user2",
+    "first_name": "Петр",
+    "last_name": "Петров",
+    "password": "password123"
+  },
+  {
+    "email": "chef@example.com",
+    "username": "chef",
+    "first_name": "Мария",
+    "last_name": "Шефова",
+    "password": "chefpassword"
+  },
+  {
+    "email": "user3@example.com",
+    "username": "user3",
+    "first_name": "Анна",
+    "last_name": "Поварова",
+    "password": "password123"
+  },
+  {
+    "email": "baker@example.com",
+    "username": "baker",
+    "first_name": "Дмитрий",
+    "last_name": "Булочкин",
+    "password": "baker123"
+  }
+]
