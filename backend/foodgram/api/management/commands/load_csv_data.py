@@ -38,31 +38,33 @@ class Command(BaseCommand):
         with open(
             f'{self.DATA_PATH}{filename}', encoding=self.CSV_ENCODING
         ) as csvfile:
-            first_line = csvfile.readline()
-            csvfile.seek(0)
 
-            if 'name' in first_line and 'measurement_unit' in first_line:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    data = {**row}
-                    try:
-                        model.objects.get_or_create(**data)
-                    except IntegrityError:
-                        self.stdout.write(self.style.WARNING(
-                            f'Объект уже существует: {model.__name__} {data}'
-                        ))
-            else:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    if len(row) != 2:
-                        continue
-                    try:
-                        model.objects.get_or_create(
-                            name=row[0],
-                            measurement_unit=row[1]
-                        )
-                    except IntegrityError:
-                        self.stdout.write(self.style.WARNING(
-                            f'Объект уже существует: {model.__name__} '
-                            f'{row[0]} {row[1]}'
-                        ))
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                data = {**row}
+                try:
+                    model.objects.get_or_create(**data)
+                except IntegrityError:
+                    self.stdout.write(self.style.WARNING(
+                        f'Объект уже существует: {model.__name__} {data}'
+                    ))
+
+    def load_ingredients(self, filename, model):
+        """загрузка модели ингредиентов."""
+        with open(
+            f'{self.DATA_PATH}{filename}', encoding=self.CSV_ENCODING
+        ) as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if len(row) != 2:
+                    continue
+                try:
+                    model.objects.get_or_create(
+                        name=row[0],
+                        measurement_unit=row[1]
+                    )
+                except IntegrityError:
+                    self.stdout.write(self.style.WARNING(
+                        f'Объект уже существует: {model.__name__} '
+                        f'{row[0]} {row[1]}'
+                    ))

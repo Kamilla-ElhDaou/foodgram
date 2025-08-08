@@ -215,7 +215,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Обновление рецепта с проверкой авторства."""
         instance = self.get_object()
-        if instance.author != request.user:
+        if not (request.user.is_staff or instance.author == request.user):
             return Response(
                 {'recipe': 'Вы не автор этого рецепта'},
                 status=HTTP_FORBIDDEN
@@ -225,7 +225,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Удаление рецепта с проверкой авторства."""
         instance = self.get_object()
-        if instance.author != request.user:
+        if not (request.user.is_staff or instance.author == request.user):
             return Response(
                 {'recipe': 'Вы не автор этого рецепта'},
                 status=HTTP_FORBIDDEN
@@ -336,5 +336,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_link(self, request, pk=None):
         """Получение короткой ссылки на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        short_link = f'https://foodgram.example.org/s/{pk}'
+        short_link = f'https://foodgram.ddnsking.com/s/{pk}'
         return Response({'short-link': short_link}, status=HTTP_OK)
