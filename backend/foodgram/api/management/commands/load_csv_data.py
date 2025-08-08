@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
 
 User = get_user_model()
@@ -22,7 +22,7 @@ class Command(BaseCommand):
         """Основной метод обработки команды."""
         loaders = {
             'ingredients.csv': (Ingredient, self.load_data),
-            'tags.csv': (Ingredient, self.load_data),
+            'tags.csv': (Tag, self.load_data),
         }
 
         for filename, (model, func) in loaders.items():
