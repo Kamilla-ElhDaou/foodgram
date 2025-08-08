@@ -1,12 +1,18 @@
 import django_filters
+from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from recipes.models import Ingredient, Recipe
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilter(filters.FilterSet):
     """Система фильтрации для модели рецептов."""
-    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    tags = filters.ModelMultipleChoiceFilter(
+        field_name='tags__slug',
+        to_field_name='slug',
+        queryset=Tag.objects.all(),
+        method='filter_tags_or'
+    )
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart'
@@ -15,6 +21,17 @@ class RecipeFilter(filters.FilterSet):
     class Meta:
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
+
+    def filter_tags_or(self, queryset, name, value):
+        """Фильтрация по ИЛИ (OR) - рецепт содержит хотя бы один тег."""
+        if not value:
+            return queryset
+            
+        q_objects = Q()
+        for tag in value:
+            q_objects |= Q(tags__slug=tag.slug)
+            
+        return queryset.filter(q_objects).distinct()
 
     def filter_is_favorited(self, queryset, name, value):
         """Показывает рецепты в избранном."""

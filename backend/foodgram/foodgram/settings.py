@@ -126,6 +126,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.FoodgramPageNumberPagination',
+    'PAGE_SIZE': 6,
 }
 
 DJOSER = {
