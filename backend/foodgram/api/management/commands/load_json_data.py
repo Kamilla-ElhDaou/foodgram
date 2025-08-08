@@ -1,10 +1,14 @@
-import json
 import base64
+import json
+import uuid
+
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-from recipes.models import Recipe, Tag, Ingredient, RecipeIngredient
+from django.utils.text import slugify
 
+from constants import MAX_NAME_IMAGE, MAX_UUID_LENGTH
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
 
@@ -32,6 +36,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Данные успешно загружены!'))
 
     def load_users(self, filename, model):
+        """Загрузка модели пользователей."""
         with open(
             f'{self.DATA_PATH}{filename}', encoding=self.CSV_ENCODING
         ) as jsonfile:
@@ -51,26 +56,25 @@ class Command(BaseCommand):
                 user.save()
 
     def load_recipes(self, filename, model):
+        """Загрузка модели рецептов."""
         with open(
             f'{self.DATA_PATH}{filename}', encoding=self.CSV_ENCODING
         ) as jsonfile:
             recipes = json.load(jsonfile)
-        
+
         for recipe_data in recipes:
-            # Обработка Base64 изображения
             image_data = recipe_data['image']
-            if image_data.startswith('data:image'):
-                format, imgstr = image_data.split(';base64,')
-                ext = format.split('/')[-1]
-                image_file = ContentFile(
-                    base64.b64decode(imgstr),
-                    name=f'recipe_{recipe_data["name"]}.{ext}'
-                )
-            else:
-                image_file = None
+            clean_name = slugify(recipe_data['name'])[:MAX_NAME_IMAGE]
+            format, imgstr = image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            image_file = ContentFile(
+                base64.b64decode(imgstr),
+                name=(f'recipe_{clean_name}{uuid.uuid4()[:MAX_UUID_LENGTH]}'
+                      f'.{ext}')
+            )
 
             author = User.objects.get(id=recipe_data['author'])
-            
+
             recipe = Recipe.objects.create(
                 author=author,
                 name=recipe_data['name'],
@@ -79,11 +83,9 @@ class Command(BaseCommand):
                 cooking_time=recipe_data['cooking_time']
             )
 
-            # Добавляем теги
             tags = Tag.objects.filter(id__in=recipe_data['tags'])
             recipe.tags.set(tags)
 
-            # Добавляем ингредиенты
             for ing in recipe_data['ingredients']:
                 ingredient = Ingredient.objects.get(id=ing['id'])
                 RecipeIngredient.objects.create(

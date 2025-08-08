@@ -50,7 +50,7 @@ class Command(BaseCommand):
                     ))
 
     def load_ingredients(self, filename, model):
-        """загрузка модели ингредиентов."""
+        """Загрузка модели ингредиентов."""
         with open(
             f'{self.DATA_PATH}{filename}', encoding=self.CSV_ENCODING
         ) as csvfile:
