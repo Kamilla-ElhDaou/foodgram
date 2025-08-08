@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Основной метод обработки команды."""
         loaders = {
-            'ingredients.csv': (Ingredient, self.load_data),
+            'ingredients.csv': (Ingredient, self.load_ingredients),
             'tags.csv': (Tag, self.load_data),
         }
 
