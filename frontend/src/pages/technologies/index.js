@@ -15,20 +15,33 @@ const Technologies = () => {
       <h1 className={styles.title}>Технологии</h1>
       <div className={styles.content}>
         <div>
-          <h2 className={styles.subtitle}>Технологии, которые применены в этом проекте:</h2>
+          <h2 className={styles.subtitle}>Технологии, которые применены в этом проекте backend и инфраструктура:</h2>
           <div className={styles.text}>
             <ul className={styles.textItem}>
               <li className={styles.textItem}>
-                Python
+                Python 3.9
               </li>
               <li className={styles.textItem}>
-                Django
+                Django 3.2
               </li>
               <li className={styles.textItem}>
                 Django REST Framework
               </li>
               <li className={styles.textItem}>
+                PostgreSQL
+              </li>
+              <li className={styles.textItem}>
+                Gunicorn
+              </li>
+              <li className={styles.textItem}>
                 Djoser
+              </li>
+              <li className={styles.textItem}>
+                Docker + Docker Compose</li>
+              <li className={styles.textItem}>
+                Nginx</li>
+              <li className={styles.textItem}>
+                GitHub Actions (CI/CD)
               </li>
             </ul>
           </div>
