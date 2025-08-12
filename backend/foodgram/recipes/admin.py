@@ -36,7 +36,7 @@ class RecipeAdmin(admin.ModelAdmin):
     """Административная панель для управления рецептами."""
 
     list_display = ('name', 'author', 'cooking_time', 'display_tags',
-                    'pub_date', 'display_image',)
+                    'pub_date', 'display_image', 'favorites_count',)
     search_fields = ('name', 'author__username', 'tags__name',)
     list_filter = ('tags', 'pub_date', 'author',)
     filter_horizontal = ('tags',)
@@ -57,6 +57,11 @@ class RecipeAdmin(admin.ModelAdmin):
             )
         return "Нет изображения"
     display_image.short_description = 'Изображение'
+
+    def get_favorites_count(self, obj):
+        """Отображает общее число добавлений рецепта в избранное."""
+        return obj.favorites.count()
+    get_favorites_count.short_description = 'В избранном'
 
 
 @admin.register(RecipeIngredient)
