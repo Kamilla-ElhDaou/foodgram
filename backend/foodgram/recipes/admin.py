@@ -58,10 +58,10 @@ class RecipeAdmin(admin.ModelAdmin):
         return "Нет изображения"
     display_image.short_description = 'Изображение'
 
-    def get_favorites_count(self, obj):
+    def favorites_count(self, obj):
         """Отображает общее число добавлений рецепта в избранное."""
         return obj.favorites.count()
-    get_favorites_count.short_description = 'В избранном'
+    favorites_count.short_description = 'В избранном'
 
 
 @admin.register(RecipeIngredient)
