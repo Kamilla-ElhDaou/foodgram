@@ -16,7 +16,6 @@ class ExtendedUserAdmin(UserAdmin):
         'last_name',
     )
     list_filter = (
-        'is_subscribed',
         'date_joined',
     )
     search_fields = (
@@ -46,7 +45,6 @@ class ExtendedUserAdmin(UserAdmin):
         (_('Extra'), {
             'fields': (
                 'avatar',
-                'is_subscribed',
             )
         }),
     )

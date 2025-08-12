@@ -10,13 +10,14 @@ from django.utils.text import slugify
 from constants import MAX_NAME_IMAGE, MAX_UUID_LENGTH
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
+
 User = get_user_model()
 
 
 class Command(BaseCommand):
     """Загрузка файлов из JSON файлов."""
 
-    DATA_PATH = 'api/data/'
+    DATA_PATH = 'recipes/data/'
     CSV_ENCODING = 'utf-8'
 
     help = 'Load data from CSV files into database'
@@ -67,9 +68,10 @@ class Command(BaseCommand):
             clean_name = slugify(recipe_data['name'])[:MAX_NAME_IMAGE]
             format, imgstr = image_data.split(';base64,')
             ext = format.split('/')[-1]
+            uuid_str = str(uuid.uuid4()).replace("-", "")
             image_file = ContentFile(
                 base64.b64decode(imgstr),
-                name=(f'recipe_{clean_name}{uuid.uuid4()[:MAX_UUID_LENGTH]}'
+                name=(f'recipe_{clean_name}{uuid_str[:MAX_UUID_LENGTH]}'
                       f'.{ext}')
             )
 

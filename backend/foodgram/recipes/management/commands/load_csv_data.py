@@ -13,7 +13,7 @@ User = get_user_model()
 class Command(BaseCommand):
     """Загрузка файлов из CSV файлов."""
 
-    DATA_PATH = 'api/data/'
+    DATA_PATH = 'recipes/data/'
     CSV_ENCODING = 'utf-8'
 
     help = 'Load data from CSV files into database'
@@ -40,14 +40,16 @@ class Command(BaseCommand):
         ) as csvfile:
 
             reader = csv.DictReader(csvfile)
+            objects_to_create = []
             for row in reader:
                 data = {**row}
-                try:
-                    model.objects.get_or_create(**data)
-                except IntegrityError:
+                if not model.objects.filter(id=data.get('id')).exists():
+                    objects_to_create.append(model(**data))
+                else:
                     self.stdout.write(self.style.WARNING(
                         f'Объект уже существует: {model.__name__} {data}'
                     ))
+            model.objects.bulk_create(objects_to_create)
 
     def load_ingredients(self, filename, model):
         """Загрузка модели ингредиентов."""

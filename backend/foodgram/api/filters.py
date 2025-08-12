@@ -7,6 +7,7 @@ from recipes.models import Ingredient, Recipe, Tag
 
 class RecipeFilter(filters.FilterSet):
     """Система фильтрации для модели рецептов."""
+
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
@@ -50,6 +51,7 @@ class RecipeFilter(filters.FilterSet):
 
 class IngredientFilter(django_filters.FilterSet):
     """Система фильтрации для модели ингредиентов."""
+
     name = django_filters.CharFilter(
         field_name='name',
         lookup_expr='istartswith'
