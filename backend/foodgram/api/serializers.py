@@ -260,10 +260,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Отображение рецепта в ответе."""
-        return RecipeSerializer(
-            instance,
-            context={'request': self.context.get('request')}
-        ).data
+        request = self.context.get('request')
+        instance.is_favorited = False
+        instance.is_in_shopping_cart = False
+
+        if request and request.user.is_authenticated:
+            instance.is_favorited = Favorite.objects.filter(
+                user=request.user,
+                recipe=instance
+            ).exists()
+            instance.is_in_shopping_cart = ShoppingCart.objects.filter(
+                user=request.user,
+                recipe=instance
+            ).exists()
+
+        return RecipeSerializer(instance, context={'request': request}).data
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -321,7 +332,7 @@ class FavoriteSerializer(FavoriteShoppingCartSerializer):
         model = Favorite
 
 
-class ShoppingCartSerializer(serializers.ModelSerializer):
+class ShoppingCartSerializer(FavoriteShoppingCartSerializer):
     """Сериализатор для рецептов в корзине покупок."""
 
     class Meta(FavoriteShoppingCartSerializer.Meta):
@@ -332,7 +343,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     """Сериализатор для отображение списка подписок."""
 
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.IntegerField(default=0, read_only=True,)
+    recipes_count = serializers.IntegerField(read_only=True,)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -356,11 +368,23 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
         return serializer.data
 
+    def get_is_subscribed(self, obj):
+        """Подписан ли текущий пользователь на данного пользователя."""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Subscription.objects.filter(
+                subscriber=request.user,
+                subscribed=obj
+            ).exists()
+        return False
+
 
 class SubscribeSerializer(SubscriptionSerializer):
     """Сериализатор подписания на пользователя."""
 
-    is_subscribed = serializers.SerializerMethodField()
+    class Meta:
+        model = Subscription
+        fields = ('subscribed',)
 
     def validate(self, data):
         """Валидация данных подписки."""
@@ -381,7 +405,3 @@ class SubscribeSerializer(SubscriptionSerializer):
             )
 
         return data
-
-    def get_is_subscribed(self, obj):
-        """Отображение статуса подписки."""
-        return True
