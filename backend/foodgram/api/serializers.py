@@ -300,30 +300,6 @@ class FavoriteShoppingCartSerializer(serializers.ModelSerializer):
         abstract = True
         fields = ('id', 'name', 'image', 'cooking_time')
 
-    def validate(self, data):
-        """Проверка корректности введеных данных."""
-        request = self.context.get('request')
-        recipe = self.context.get('recipe')
-        model = self.Meta.model
-
-        exists = model.objects.filter(
-            user=request.user,
-            recipe=recipe
-        ).exists()
-
-        if request.method == 'POST':
-            if exists:
-                raise serializers.ValidationError(
-                    {"detail": "Рецепт уже добавлен."}
-                )
-
-        elif request.method == 'DELETE' and not exists:
-            raise serializers.ValidationError(
-                {"detail": "Рецепт не добавлен."}
-            )
-
-        return data
-
 
 class FavoriteSerializer(FavoriteShoppingCartSerializer):
     """Сериализатор для рецептов в избранном."""

@@ -181,121 +181,50 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeSerializer
         return RecipeCreateSerializer
 
-    @action( 
-        detail=True, 
-        methods=('post', 'delete',), 
-        permission_classes=(permissions.IsAuthenticated,), 
-    ) 
-    def favorite(self, request, pk=None): 
-        """Добавление/удаление рецепта в избранное.""" 
-        recipe = get_object_or_404(Recipe, pk=pk) 
-        favorite = Favorite.objects.filter(user=request.user, recipe=recipe) 
- 
-        if request.method == 'POST': 
-            if favorite.exists(): 
-                return Response( 
-                    {'favorite': 'Рецепт уже в избранном'}, 
-                    status=HTTP_BAD_REQUEST, 
-                ) 
-            favorite = Favorite.objects.create( 
-                user=request.user, recipe=recipe) 
-            serializer = FavoriteSerializer( 
-                favorite, context={'request': request}) 
-            return Response(serializer.data, status=HTTP_CREATED) 
- 
-        if not favorite.exists(): 
-            return Response( 
-                {'favorite': 'Рецепт не находится в избранном.'}, 
-                status=HTTP_BAD_REQUEST, 
-            ) 
-        favorite = Favorite.objects.get(user=request.user, recipe=recipe) 
-        favorite.delete() 
-        return Response(status=HTTP_NO_CONTENT) 
- 
-    @action( 
-        detail=True, 
-        methods=('post', 'delete',), 
-        permission_classes=(permissions.IsAuthenticated,), 
-    ) 
-    def shopping_cart(self, request, pk=None): 
-        """Добавление/удаление рецепта в корзине покупок.""" 
-        recipe = get_object_or_404(Recipe, pk=pk) 
-        cart_item = ShoppingCart.objects.filter( 
-            user=request.user, recipe=recipe, 
-        ) 
- 
-        if request.method == 'POST': 
-            if cart_item.exists(): 
-                return Response( 
-                    {'shopping_cart': 'Рецепт уже в корзине'}, 
-                    status=HTTP_BAD_REQUEST, 
-                ) 
-            cart_item = ShoppingCart.objects.create( 
-                user=request.user, recipe=recipe) 
-            serializer = ShoppingCartSerializer( 
-                cart_item, context={'request': request}) 
-            return Response(serializer.data, status=HTTP_CREATED) 
- 
-        if not cart_item.exists(): 
-            return Response( 
-                {'shopping_cart': 'Рецепт не находится в корзине.'}, 
-                status=HTTP_BAD_REQUEST, 
-            ) 
-        cart_item = ShoppingCart.objects.get(user=request.user, recipe=recipe) 
-        cart_item.delete() 
+    def handle_recipe_action(self, request, pk, serializer_class):
+        """Общий метод для действий с рецептами в корзине и избранном."""
+        recipe = get_object_or_404(Recipe, pk=pk)
+        model_name = serializer_class.Meta.model
+        item = model_name.objects.filter(user=request.user, recipe=recipe)
+
+        if request.method == 'POST':
+            if item.exists():
+                return Response(
+                    {'detail': 'Рецепт уже добавлен'},
+                    status=HTTP_BAD_REQUEST,
+                )
+            item = model_name.objects.create(
+                user=request.user, recipe=recipe)
+            serializer = serializer_class(
+                item, context={'request': request})
+            return Response(serializer.data, status=HTTP_CREATED)
+
+        if not item.exists():
+            return Response(
+                {'detail': 'Рецепт не добавлен'},
+                status=HTTP_BAD_REQUEST,
+            )
+        item = model_name.objects.get(user=request.user, recipe=recipe)
+        item.delete()
         return Response(status=HTTP_NO_CONTENT)
 
-    # def handle_recipe_action(self, request, pk, serializer_class):
-    #     """Общий метод для действий с рецептами в корзине и избранном."""
-    #     recipe = get_object_or_404(Recipe, pk=pk)
-    #     context = {'request': request, 'recipe': recipe}
-    #     if request.method == 'POST':
-    #         serializer = serializer_class(
-    #             data={'user': request.user.id, 'recipe': recipe.id},
-    #             context=context
-    #         )
-    #         serializer.is_valid(raise_exception=True)
-    #         serializer.save()
-    #         return Response(serializer.data, status=HTTP_CREATED)
+    @action(
+        detail=True,
+        methods=('post', 'delete',),
+        permission_classes=(permissions.IsAuthenticated,),
+    )
+    def favorite(self, request, pk=None):
+        """Добавление/удаление рецепта в избранное."""
+        return self.handle_recipe_action(request, pk, FavoriteSerializer)
 
-    #     deleted_count, _ = serializer_class.Meta.model.objects.filter(
-    #         user=request.user,
-    #         recipe=recipe
-    #     ).delete()
-
-    #     if not deleted_count:
-    #         return Response(
-    #             {'detail': 'Рецепт не добавлен'},
-    #             status=HTTP_BAD_REQUEST
-    #         )
-
-    #     return Response(status=HTTP_NO_CONTENT)
-
-    # @action(
-    #     detail=True,
-    #     methods=('post', 'delete',),
-    #     permission_classes=(permissions.IsAuthenticated,),
-    # )
-    # def favorite(self, request, pk=None):
-    #     """Добавление/удаление рецепта в избранное."""
-    #     return self.handle_recipe_action(
-    #         request=request,
-    #         pk=pk,
-    #         serializer_class=FavoriteSerializer,
-    #     )
-
-    # @action(
-    #     detail=True,
-    #     methods=('post', 'delete',),
-    #     permission_classes=(permissions.IsAuthenticated,),
-    # )
-    # def shopping_cart(self, request, pk=None):
-    #     """Добавление/удаление рецепта в корзине покупок."""
-    #     return self.handle_recipe_action(
-    #         request=request,
-    #         pk=pk,
-    #         serializer_class=ShoppingCartSerializer,
-    #     )
+    @action(
+        detail=True,
+        methods=('post', 'delete',),
+        permission_classes=(permissions.IsAuthenticated,),
+    )
+    def shopping_cart(self, request, pk=None): 
+        """Добавление/удаление рецепта в корзине покупок."""
+        return self.handle_recipe_action(request, pk, ShoppingCartSerializer)
 
     def get_shopping_cart_ingredients(self, user):
         """Получение ингредиентов из корзины."""
