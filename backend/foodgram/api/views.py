@@ -222,7 +222,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=('post', 'delete',),
         permission_classes=(permissions.IsAuthenticated,),
     )
-    def shopping_cart(self, request, pk=None): 
+    def shopping_cart(self, request, pk=None):
         """Добавление/удаление рецепта в корзине покупок."""
         return self.handle_recipe_action(request, pk, ShoppingCartSerializer)
 
