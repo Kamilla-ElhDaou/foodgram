@@ -16,11 +16,14 @@ class ExtendedUserAdmin(UserAdmin):
         'last_name',
     )
     list_filter = (
-        'date_joined',
+        'is_active',
+        'is_superuser',
     )
     search_fields = (
         'username',
         'email',
+        'first_name',
+        'last_name',
     )
     ordering = ('username',)
     readonly_fields = (

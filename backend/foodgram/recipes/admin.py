@@ -1,6 +1,10 @@
 from django.contrib import admin
+from django.db.models import Prefetch
 from django.utils.html import format_html
 
+from recipes.admin_filters import (IngredientFilter, RecipeFilter,
+                                   SubscribedFilter, SubscriberFilter,
+                                   TagFilter, UserFilter)
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Subscription, Tag)
 
@@ -20,7 +24,6 @@ class IngredientAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'measurement_unit',)
     search_fields = ('name',)
-    list_filter = ('measurement_unit',)
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -37,11 +40,18 @@ class RecipeAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'author', 'cooking_time', 'display_tags',
                     'pub_date', 'display_image', 'favorites_count',)
-    search_fields = ('name', 'author__username', 'tags__name',)
-    list_filter = ('tags', 'pub_date', 'author',)
-    filter_horizontal = ('tags',)
+    search_fields = ('name', 'author__username',)
+    list_filter = (TagFilter,)
     inlines = (RecipeIngredientInline,)
     readonly_fields = ('pub_date',)
+
+    def get_queryset(self, request):
+        """Возвращает QuerySet с оптимизированными запросами к базе данных."""
+        queryset = super().get_queryset(request)
+        return queryset.select_related('author').prefetch_related(
+            Prefetch('tags'),
+            Prefetch('ingredients'),
+        )
 
     def display_tags(self, obj):
         """Форматирует отображение тегов через запятую."""
@@ -69,7 +79,13 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
     """Административная панель для связи рецептов и ингредиентов."""
 
     list_display = ('recipe', 'ingredient', 'amount',)
-    search_fields = ('recipe__name', 'ingredient__name',)
+    list_filter = (RecipeFilter, IngredientFilter)
+    search_fields = ('recipe__name',)
+
+    def get_queryset(self, request):
+        """Возвращает QuerySet с оптимизированными запросами к базе данных."""
+        queryset = super().get_queryset(request)
+        return queryset.select_related('recipe', 'ingredient')
 
 
 @admin.register(Favorite)
@@ -77,7 +93,13 @@ class FavoriteAdmin(admin.ModelAdmin):
     """Административная панель для избранных рецептов."""
 
     list_display = ('user', 'recipe',)
-    search_fields = ('user__username', 'recipe__name',)
+    list_filter = (UserFilter, RecipeFilter)
+    search_fields = ('user__username',)
+
+    def get_queryset(self, request):
+        """Возвращает QuerySet с оптимизированными запросами к базе данных."""
+        queryset = super().get_queryset(request)
+        return queryset.select_related('user', 'recipe')
 
 
 @admin.register(ShoppingCart)
@@ -85,7 +107,13 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     """Административная панель для корзины покупок."""
 
     list_display = ('user', 'recipe',)
-    search_fields = ('user__username', 'recipe__name',)
+    list_filter = (UserFilter, RecipeFilter)
+    search_fields = ('user__username',)
+
+    def get_queryset(self, request):
+        """Возвращает QuerySet с оптимизированными запросами к базе данных."""
+        queryset = super().get_queryset(request)
+        return queryset.select_related('user', 'recipe')
 
 
 @admin.register(Subscription)
@@ -93,7 +121,10 @@ class SubscriptionAdmin(admin.ModelAdmin):
     """Административная панель для подписок пользователей."""
 
     list_display = ('subscriber', 'subscribed',)
-    search_fields = (
-        'subscriber__username',
-        'subscribed__username',
-    )
+    list_filter = (SubscriberFilter, SubscribedFilter)
+    search_fields = ('subscriber__username',)
+
+    def get_queryset(self, request):
+        """Возвращает QuerySet с оптимизированными запросами к базе данных."""
+        queryset = super().get_queryset(request)
+        return queryset.select_related('subscriber', 'subscribed')
