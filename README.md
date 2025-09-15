@@ -1,4 +1,4 @@
-# [Foodgram](https://foodgram.ddnsking.com/)
+# Foodgram
 
 ## О проекте
 
